@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:Converters="clr-namespace:Tasker.Converters"
+             x:Class="Tasker.MVVM.Views.MainView"
+             Title="Tasker">
+
+    <ContentPage.Resources>
+        <Converters:ColorConverter x:Key="ColorConverter" />
+    </ContentPage.Resources>
+
+    <Grid Margin="15"
+          RowDefinitions=".1*,.3*,.7*">
+        <Label Text="My Tasks"
+               StyleClass="DarkBlue,Header" />
+        <!--#region  categories -->
+        <Grid Grid.Row="1"
+              RowDefinitions=".2*,.8*">
+            <Label StyleClass="LightBlue,Subheader"
+                   Text="Categories" />
+            <CollectionView Grid.Row="2"
+                            ItemsSource="{Binding Categories}">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout ItemSpacing="5" Orientation="Horizontal" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10">
+                            <RoundRectangle/>
+                            <VerticalStackLayout Padding="15" Spacing="10">
+                                <Label StyleClass="LightBlue"
+                                       SemanticProperties.Description="{Binding PendingTasks, StringFormat='{0} Tasks'}"
+                                       Text="{Binding PendingTasks, StringFormat='{0} Tasks'}" />
+                                <Label StyleClass="DarkBlue,CardTitle"
+                                       SemanticProperties.Description="{Binding CategoryName}"
+                                       Text="{Binding CategoryName}" />
+                                <ProgressBar SemanticProperties.Description="{Binding Percentage, StringFormat='{0} %'}"
+                                    Progress="{Binding Percentage}"
+                                             ProgressColor="{Binding Color, Converter={StaticResource ColorConverter}}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+        <!--#endregion-->
+        <!--#region  tasks -->
+        <Grid Grid.Row="2"
+              RowDefinitions=".2*,.8*">
+            <Label SemanticProperties.Description="Pending Tasks"
+       Text="Pending Tasks"
+       StyleClass="LightBlue,Subheader" />
+            <CollectionView Grid.Row="1"
+                            ItemsSource="{Binding Tasks}"
+                            ItemsUpdatingScrollMode="KeepLastItemInView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame BorderColor="Transparent">
+                            <HorizontalStackLayout>
+                                <CheckBox x:Name="checkboxTask"
+                                          CheckedChanged="checkboxTask_CheckedChanged"
+                                    IsChecked="{Binding Completed}"
+                                          VerticalOptions="Center"
+                                          Color="{Binding TaskColor, Converter={StaticResource ColorConverter}}" />
+                                <Label SemanticProperties.Description="{Binding TaskName}"
+                                       Text="{Binding TaskName}"
+                                       VerticalOptions="Center">
+                                    <Label.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding Source={x:Reference checkboxTask}, Path=IsChecked}"
+                                            TargetType="Label"
+                                            Value="True">
+                                            <Setter Property="TextDecorations" Value="Strikethrough" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </HorizontalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+        <!--#endregion-->
+        <Button Grid.Row="2"
+                Text="+"
+                SemanticProperties.Description="Add new"
+                Clicked="Button_Clicked"
+                Style="{StaticResource CircularButton}" />
+    </Grid>
+
+</ContentPage>
